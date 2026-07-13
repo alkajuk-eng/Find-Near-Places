@@ -1,170 +1,288 @@
-/* "use client";
-
-import React, { useState } from "react";
-import BusinessItem from "./BusinessItem";
-
-function BusinessList({ places = [] }) {
-  const [count, setCount] = useState(0);
-
-  const pageSize = 5;
-
-  const start = count * pageSize;
-  const end = start + pageSize;
-
-  const visiblePlaces = places.slice(start, end);
-
-  return (
-    <div>
-      <h2 className="text-[20px] mt-3 font-bold mb-3 flex items-center justify-between">
-        Top Nearby Places
-
-        <span className="flex gap-2">
-          {count > 0 && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-10 p-2 text-gray-400 hover:text-purple-500 hover:bg-purple-100 rounded-lg cursor-pointer"
-              onClick={() => setCount(count - 3)}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5 8.25 12l7.5-7.5"
-              />
-            </svg>
-          )}
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-10 p-2 text-gray-400 hover:text-purple-500 hover:bg-purple-100 rounded-lg cursor-pointer"
-            onClick={() => setCount(count + 3)}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m8.25 4.5 7.5 7.5-7.5 7.5"
-            />
-          </svg>
-        </span>
-      </h2>
-      <div>
-        {visiblePlaces.map((place, index) =>index>=count&&index<count+3&& (
-          <BusinessItem key={index} place={place} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default BusinessList; 
-
- */
-
 "use client";
 
-import React, { useState, useEffect } from "react";
-import BusinessItem from "./BusinessItem";
-import ShimmerEfectItem from "./ShimmerEfectItem";
+import { useState, useEffect, useContext } from "react";
+import { SelectedBusinessContext } from "../app/context/SelectedBusinessContext";
 
-function BusinessList({ places = [], category }) {
+
+export default function BusinessList({
+  places,
+  loading
+}) {
+
   const [page, setPage] = useState(0);
-  const [loader, setLoader] = useState(true);
+
+  const {
+    setSelectedBusiness
+  } = useContext(SelectedBusinessContext);
+
 
   const pageSize = 5;
 
-  const start = page * pageSize;
-  const end = start + pageSize;
 
-  const visiblePlaces = places.slice(start, end);
-
-  const maxPage = Math.max(0, Math.ceil(places.length / pageSize) - 1);
-
-  // reset when category OR places change
   useEffect(() => {
     setPage(0);
-    setLoader(true);
+  }, [places]);
 
-    const timer = setTimeout(() => {
-      setLoader(false);
-    }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [places, category]);
+  const start = page * pageSize;
 
-  const goNext = () => {
-    setPage((prev) => Math.min(prev + 1, maxPage));
-  };
 
-  const goPrev = () => {
-    setPage((prev) => Math.max(prev - 1, 0));
-  };
+  const visiblePlaces = places.slice(
+    start,
+    start + pageSize
+  );
+
+
+  const showPrev = page > 0;
+
+
+  const showNext =
+    start + pageSize < places.length;
+
+
+
+  if (loading) {
+
+    return (
+
+      <div className="space-y-3">
+
+        {[1,2,3,4,5].map((item)=>(
+
+          <div
+            key={item}
+            className="
+              flex
+              gap-3
+              p-3
+              border
+              rounded-xl
+              animate-pulse
+            "
+          >
+
+            <div className="
+              w-20
+              h-20
+              bg-gray-300
+              rounded-lg
+            "/>
+
+
+            <div className="flex-1 space-y-3">
+
+              <div className="
+                h-4
+                bg-gray-300
+                rounded
+                w-3/4
+              "/>
+
+
+              <div className="
+                h-3
+                bg-gray-300
+                rounded
+              "/>
+
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    );
+
+  }
+
+
 
   return (
-    <div>
-      <h2 className="text-[20px] mt-3 font-bold mb-3 flex items-center justify-between">
-        Top Nearby Places
 
-        <span className="flex gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            onClick={goPrev}
-            className={`size-10 p-2 rounded-lg cursor-pointer ${
-              page === 0
-                ? "text-gray-200 cursor-not-allowed"
-                : "text-gray-400 hover:text-purple-500 hover:bg-purple-100"
-            }`}
+    <div className="relative mt-5">
+
+
+      {/* Левая стрелка */}
+
+      {showPrev && (
+
+        <button
+
+          onClick={()=>{
+            setPage(page - 1);
+          }}
+
+          className="
+            absolute
+            -left-12
+            top-1/2
+            -translate-y-1/2
+            w-9
+            h-9
+            rounded-full
+            bg-white
+            shadow-md
+            z-10
+          "
+
+        >
+          ◀
+        </button>
+
+      )}
+
+
+
+
+      {/* Список */}
+
+      <div className="space-y-3">
+
+
+        {visiblePlaces.map((place,index)=>(
+
+
+          <div
+
+            key={index}
+
+            onClick={()=>{
+
+              setSelectedBusiness(place);
+
+            }}
+
+
+            className="
+              flex
+              gap-4
+              p-3
+              border
+              rounded-xl
+              cursor-pointer
+              hover:shadow-lg
+              transition
+              bg-white
+            "
+
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 19.5 8.25 12l7.5-7.5"
-            />
-          </svg>
 
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            onClick={goNext}
-            className={`size-10 p-2 rounded-lg cursor-pointer ${
-              page >= maxPage
-                ? "text-gray-200 cursor-not-allowed"
-                : "text-gray-400 hover:text-purple-500 hover:bg-purple-100"
-            }`}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m8.25 4.5 7.5 7.5-7.5 7.5"
-            />
-          </svg>
-        </span>
-      </h2>
 
-      <div>
-        {!loader
-          ? visiblePlaces.map((place, index) => (
-              <BusinessItem key={start + index} place={place} />
-            ))
-          : [1, 2, 3, 4, 5].map((_, index) => (
-              <ShimmerEfectItem key={index} />
-            ))}
+            {/* Фото */}
+
+            <img
+
+              src={
+                place.photos?.length
+
+                ?
+
+                `https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=${place.photos[0].photo_reference}&key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`
+
+                :
+
+                "/placeholder.png"
+              }
+
+
+              alt={place.name}
+
+
+              className="
+                w-20
+                h-20
+                rounded-lg
+                object-cover
+              "
+
+            />
+
+
+
+            {/* Информация */}
+
+            <div className="flex-1">
+
+
+              <h3 className="font-bold">
+
+                {place.name}
+
+              </h3>
+
+
+              <p className="text-sm text-gray-600">
+
+                {place.vicinity}
+
+              </p>
+
+
+              {place.rating && (
+
+                <p className="mt-1">
+
+                  ⭐ {place.rating}
+
+                </p>
+
+              )}
+
+
+            </div>
+
+
+          </div>
+
+
+        ))}
+
+
       </div>
-    </div>
-  );
-}
 
-export default BusinessList;
+
+
+
+
+      {/* Правая стрелка */}
+
+      {showNext && (
+
+        <button
+
+          onClick={()=>{
+
+            setPage(page + 1);
+
+          }}
+
+
+          className="
+            absolute
+            -right-12
+            top-1/2
+            -translate-y-1/2
+            w-9
+            h-9
+            rounded-full
+            bg-white
+            shadow-md
+            z-10
+          "
+
+        >
+          ▶
+        </button>
+
+      )}
+
+
+
+    </div>
+
+  );
+
+}
