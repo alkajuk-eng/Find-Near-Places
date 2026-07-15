@@ -1,30 +1,45 @@
 import React from "react";
 
-function CategoryItem({ category }) {
+function CategoryItem({ category, active }) {
   return (
     <div
-      className="
+      className={`
         flex
         flex-col
         items-center
         justify-center
-        bg-purple-100
         p-3
         rounded-2xl
-        hover:scale-105
-        transition-all
-        duration-200
         cursor-pointer
         w-[100px]
         h-[100px]
-      ">
+        transition-all
+        duration-200
+
+        ${
+          active
+            ? "bg-purple-500 text-white shadow-lg scale-105"
+            : "bg-purple-100 text-purple-700"
+        }
+      `}
+    >
       <img
         src={category.icon}
         alt={category.name}
-        width={35}
-        height={35}
+        className="
+          w-[35px]
+          h-[35px]
+          object-contain
+        "
       />
-      <h2 className="text-[12px] text-purple-700 mt-1 text-center">
+
+      <h2
+        className="
+          text-[12px]
+          mt-1
+          text-center
+        "
+      >
         {category.name}
       </h2>
     </div>
