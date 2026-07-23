@@ -16,42 +16,32 @@ import { FavoriteContext } from "../app/context/FavoriteContext";
 
 export default function BusinessList({ places, loading }) {
   // Current page number
-
   const [page, setPage] = useState(0);
 
   // Selected place context
-
   const { selectedBusiness, setSelectedBusiness } = useContext(
     SelectedBusinessContext,
   );
 
   // Favorites context
-
   const { addFavorite, removeFavorite, favorites } =
     useContext(FavoriteContext);
 
   // Number of items per page
-
   const pageSize = 5;
 
   // Reset page after new search
-
   useEffect(() => {
     setPage(0);
   }, [places]);
 
   // Pagination calculation
-
   const start = page * pageSize;
-
   const visiblePlaces = places.slice(start, start + pageSize);
-
   const showPrev = page > 0;
-
   const showNext = start + pageSize < places.length;
 
   // Check favorite
-
   const isFavorite = (place) => {
     return favorites.some((item) => item.place_id === place.place_id);
   };

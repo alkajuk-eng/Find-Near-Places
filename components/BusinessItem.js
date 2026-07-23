@@ -6,29 +6,22 @@ import Image from "next/image";
 
 function BusinessItem({ place }) {
   // Google API key for loading business photos
-
   const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
   // Business name
-
   const name = place?.name;
 
   // Business address
-
   // Google Places can return different address fields
-
   const address = place?.vicinity || place?.formatted_address;
 
   // Business rating
-
   const rating = place?.rating || "N/A";
 
   // Get first photo reference from Google Places API
-
   const photoRef = place?.photos?.[0]?.photo_reference;
 
   // Create Google photo URL
-
   const photoUrl = photoRef
     ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${GOOGLE_API_KEY}`
     : "/businessItem.jpg";
